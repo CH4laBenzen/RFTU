@@ -1,15 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude -pthread
 
+SIMULATOR_SRC = src/network_simulator.c
+
 all: build/client build/server
 
-build/client: src/client.c common/network_simulator.c
+build/client: src/client.c $(SIMULATOR_SRC)
 	@mkdir -p build
-	$(CC) $(CFLAGS) src/client.c common/network_simulator.c -o build/client
+	$(CC) $(CFLAGS) src/client.c $(SIMULATOR_SRC) -o build/client
 
-build/server: src/server.c common/network_simulator.c
+build/server: src/server.c $(SIMULATOR_SRC)
 	@mkdir -p build
-	$(CC) $(CFLAGS) src/server.c common/network_simulator.c -o build/server
+	$(CC) $(CFLAGS) src/server.c $(SIMULATOR_SRC) -o build/server
 
 clean:
 	rm -rf build
