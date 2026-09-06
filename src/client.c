@@ -206,7 +206,7 @@ int main(int argc, char *argv[]){
     printf("Enter the option: \n");
     while(1){
         fgets(buffer, BUFFER_SIZE, stdin);
-        ssize_t bytes_sent = sendto(client_fd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&server_addr, addr_len);
+        sendto(client_fd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&server_addr, addr_len);
         if(strncmp(buffer, "EXIT", 4) == 0){
             printf("[Client] Da gui lenh EXIT, ket thuc ket noi!\n");
             break;
@@ -214,7 +214,6 @@ int main(int argc, char *argv[]){
         char response[64];
         memset(&response,  0, sizeof(response));
         struct sockaddr_in thread_addr;
-        socklen_t thread_len = sizeof(thread_addr);
         ssize_t received_bytes = recvfrom(client_fd, response, sizeof(response) - 1, 0, (struct sockaddr*)&server_addr, &addr_len);
         if(received_bytes < 0){
             printf("[Client] khong nhan duoc phan hoi PORT tu Server!\n");
