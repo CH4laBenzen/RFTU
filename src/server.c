@@ -10,6 +10,7 @@
 #include<unistd.h>
 #include<arpa/inet.h>
 #include<pthread.h>
+#include"network_simulator.h"
 
 #define BUFFER_SIZE 512
 #define PATH_SEND_SERVER "/home/penitent/project/RFTU/server/server_send.txt"
@@ -91,7 +92,7 @@ void handle_send(int server_fd, struct sockaddr_in *client_addr, socklen_t addr_
         int retries = 0;
 
         while(retries < MAX_RETRIES){
-            ssize_t bytes_sent = sendto(server_fd, &send_packet, sizeof(Packet), 0, (struct sockaddr*)client_addr, addr_len);
+            ssize_t bytes_sent = simulated_sendto(server_fd, &send_packet, sizeof(Packet), 0, (struct sockaddr*)client_addr, addr_len);
             if(bytes_sent < 0){
                 perror("[Server] Loi gui du lieu!");
                 break;
@@ -116,7 +117,6 @@ void handle_send(int server_fd, struct sockaddr_in *client_addr, socklen_t addr_
         printf("[Server] Da gui goi seq=%d (%d bytes) & Nhan ACK thanh cong!\n", seq_num, send_packet.data_len);
         seq_num++;
 
-        sleep(3); //Delay 3s
         if(bytes_read < BUFFER_SIZE) break;
     }
     close(file_fd);
@@ -171,7 +171,7 @@ void handle_recv(int server_fd, struct sockaddr_in *client_addr, socklen_t addr_
         ack_packet.is_ack = 1;
         ack_packet.ack_num = recv_packet.seq_num;
         ack_packet.checksum = compute_packet_checksum(&ack_packet);
-        sendto(server_fd, &ack_packet, sizeof(Packet), 0, (struct sockaddr*)client_addr, len);
+        simulated_sendto(server_fd, &ack_packet, sizeof(Packet), 0, (struct sockaddr*)client_addr, len);
 
         if(recv_packet.data_len < BUFFER_SIZE){
             break;
@@ -198,6 +198,9 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "Usage: %s <port>\n",argv[0]);
         exit(EXIT_FAILURE);
     }
+
+    init_network_simulator(0.15f, 0.05f); // Giả lập rớt gói 15% và lỗi bit 5%
+
     int server_fd;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(server_addr);
