@@ -244,7 +244,7 @@ int main(int argc, char *argv[]){
             printf("[Server] Client %s:%d da ngat ket noi!\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
             break;
         } else{
-            printf("[Server] Lệnh không hợp lệ!\n");
+            printf("[Server] Lenh khong hop le!\n");
             continue;
         }
         // Tao socket moi cho Client
