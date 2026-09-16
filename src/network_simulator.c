@@ -19,19 +19,19 @@ static float get_random_prob(void) {
 
 ssize_t simulated_sendto(int sockfd, const void *buf, size_t len, int flags,
                          const struct sockaddr *dest_addr, socklen_t addrlen) {
-    // Giả lập rớt gói (Packet Loss)
+    // Gia lap rot packet
     if (g_loss_rate > 0.0f && get_random_prob() < g_loss_rate) {
         printf("[SIMULATOR] >> Gói tin bị DROP (Loss)!\n");
-        return (ssize_t)len; // Báo thành công ảo để bên gửi chờ timeout
+        return (ssize_t)len;
     }
 
-    // Giả lập lỗi bit (Bit Corruption)
+    // Gia lap loi bit
     if (g_corrupt_rate > 0.0f && get_random_prob() < g_corrupt_rate && len > 0) {
         unsigned char *corrupted_buf = malloc(len);
         if (corrupted_buf != NULL) {
             memcpy(corrupted_buf, buf, len);
 
-            // Đảo 1 bit ngẫu nhiên trong gói
+            // Dao 1 bit ngau nhien trong goi tin
             size_t target_byte = rand() % len;
             int target_bit = rand() % 8;
             corrupted_buf[target_byte] ^= (1 << target_bit);
